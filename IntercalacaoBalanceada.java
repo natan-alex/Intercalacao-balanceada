@@ -262,7 +262,8 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     }
 
     // preencher o array qtdBytesDisponivelNosArquivos de forma a colocar em cada posição
-    // o número de bytes que ainda faltam ser lidos dos arquivos abertos em modo leitura
+    // o número de bytes que ainda faltam ser lidos do arquivo aberto em modo leitura no índice do array
+    // objectInputs nessa posição
     private void getNumBytesDisponiveis() {
         for (int i = 0; i < caminhos; i++) {
             try {
