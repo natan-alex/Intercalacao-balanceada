@@ -14,14 +14,14 @@ import java.io.Serializable;
 import java.io.IOException;
 
 public class GeradorDeDados {
-    // ler arquivo com registros de Pessoa e adicionar em dados.txt
+    // ler arquivo com registros de Pessoa e adicionar em dados_fonte.db
 	public GeradorDeDados(String nomeDoArquivoCsv) {
         String[] partes = new String[2];
         String linha = "";
 		try ( 
 			FileReader fr = new FileReader(nomeDoArquivoCsv);
             BufferedReader br = new BufferedReader(fr);
-            FileOutputStream fos = new FileOutputStream("dados.txt");
+            FileOutputStream fos = new FileOutputStream("dados_fonte.db");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
         ) {
 

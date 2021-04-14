@@ -9,7 +9,7 @@ public class Main {
         // GeradorDeDados gerador = new GeradorDeDados("mock_data.csv");
 		LerDadosDeUmArquivo leitor;
 		int caminhos = 10;
-		IntercalacaoBalanceada<Integer> ib = new IntercalacaoBalanceada<Integer>("dados.txt", caminhos);
+		IntercalacaoBalanceada<Integer> ib = new IntercalacaoBalanceada<Integer>("dados_fonte.db", caminhos);
 		ib.distribuirDadosEntreCaminhos();
 
 		System.out.println("\n\tAPOS A DISTRIBUIÇÃO EM " + caminhos + " CAMINHOS: ");
