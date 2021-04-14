@@ -42,16 +42,16 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     private ObjectOutputStream[] objectOutputs;
     private ObjectInputStream[] objectInputs;
 
-    private int[] qtdBytesDisponivelNosArquivos; // quantidade de bytes para serem lidos de cada 
-    // arquivo usado para a escrita durante a intercalação
+    private int[] qtdBytesDisponivelNosArquivos; // quantidade de bytes restantes em cada um dos
+    // arquivos abertos em modo leitura durante a intercalação dos dados
 
     // para ler os dados de um arquivo
     private LerDadosDeUmArquivo leitor;
 
     // diz sobre os modos de abertura e fechamento dos arquivos:
     // utilizado também para determinar qual array utilizar para a distribuição e intercalação ->
-    // se for o modo leitura, o array de fileInputs e o objectInputs devem ser utilizados
-    // se for o modo escrita, o array de fileOutputs e o objectOutputs devem ser utilizados
+    // se for o modo leitura, os arrays de fileInputs e o objectInputs serão ser utilizados
+    // se for o modo escrita, os arrays de fileOutputs e o objectOutputs serão ser utilizados
     enum ModosDeAberturaEFechamento {
         LEITURA,
         ESCRITA
