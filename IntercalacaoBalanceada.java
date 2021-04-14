@@ -160,7 +160,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             System.out.println("IOException lançada no método lerRegistrosDoArquivoDeDados da classe IntercalacaoBalanceada! Erro: " + e.getMessage());
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            System.out.println("ClassNotFoundException lançada no método lerRegistrosDoArquivoDeDados! Erro: " + e.getMessage());
+            System.out.println("ClassNotFoundException lançada no método lerRegistrosDoArquivoDeDados da classe IntercalacaoBalanceada! Erro: " + e.getMessage());
             e.printStackTrace();
         }
         return qtdBytesDisponivel;
