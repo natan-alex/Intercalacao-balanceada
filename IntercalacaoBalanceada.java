@@ -28,7 +28,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     // que serão usados na intercalação e distruibuição dos dados
 
     // número de registros que podem ser 
-    // armazenados em memoria principal
+    // armazenados e ordenados em memoria principal
     private int capacidadeRegistrosEmMemoria;
 
     // para o arquivo que contém os dados
@@ -50,8 +50,8 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     // diz sobre os modos de abertura e fechamento dos arquivos:
     // utilizado também para determinar qual array utilizar para a distribuição e intercalação ->
-    // se for o modo leitura, os arrays de fileInputs e o objectInputs serão ser utilizados
-    // se for o modo escrita, os arrays de fileOutputs e o objectOutputs serão ser utilizados
+    // se for o modo leitura, os arrays de fileInputs e o objectInputs serão utilizados
+    // se for o modo escrita, os arrays de fileOutputs e o objectOutputs serão utilizados
     enum ModosDeAberturaEFechamento {
         LEITURA,
         ESCRITA
@@ -59,7 +59,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     public IntercalacaoBalanceada(String arquivoASerOrdenado, int caminhos) {
         this.caminhos = (byte) caminhos;
-        this.capacidadeRegistrosEmMemoria = 7;
+        this.capacidadeRegistrosEmMemoria = 7; // número fictício somente para testes
         qtdBytesDisponivelNosArquivos = new int[caminhos];
 
         try {
