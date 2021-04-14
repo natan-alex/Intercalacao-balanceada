@@ -28,8 +28,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     // que serão usados na intercalação e distruibuição dos dados
 
     // número de registros que podem ser 
-    // lidos com base no tamanho do registro
-    // e na capacidade da memoria principal
+    // armazenados em memoria principal
     private int capacidadeRegistrosEmMemoria;
 
     // para o arquivo que contém os dados
@@ -77,10 +76,9 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         }
     }
 
-    // instanciar novos FileInputStream e ObjectInputStream, para cada item da metade especificada,
-    // nos arrays de fileInputs e objectInputs
-    // param modo indica o modo de abertura dos arquivos
-    // param qualMetade indica qual a metade dos arrays fileInputs e objectInputs que sera usada
+    // instanciar novos FileInput/OutputStream e ObjectInput/OutputStream nos arrays fileIn/Outputs e objectIn/Outputs
+    // com base no modo de abertura que indica também quais arrays serão usados e no número do primeiro arquivo
+    // que será aberto -> sempre serão instanciados caminhos objetos
     private void abrirConexaoComArquivos(ModosDeAberturaEFechamento modo, int numPrimeiroArquivo) {
         // abrir conexao com arquivos
         String arquivoAtual = "";
@@ -170,7 +168,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     // escrever dados vindos de uma lista no arquivo + numDoArquivo
     // (o nome do arquivo é composto por arquivo + num, que é o num 
-    // recebido como argumento da função)
+    // recebido como argumento do método)
     private void escreverDadosNoArquivo(List<T> dados, int numDoArquivo) {
         try {
             for (T item : dados) {
@@ -193,6 +191,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     }
 
     // ler um único registro usando objectInputs[numDoArquivo]
+    // retorna null em caso de fim de arquivo
     @SuppressWarnings("unchecked")
     private T lerRegistroDoArquivo(int numDoArquivo) {
         T registroLido = null;
@@ -212,7 +211,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     // distribuir os dados entre os diferentes caminhos
     public void distribuirDadosEntreCaminhos() {
-        // quantidade de bytes disponivel no arquivo
+        // quantidade de bytes disponivel no arquivo com os dados a serem ordenados
         int qtdBytesDisponivel = 0;
 
         // diz sobre o número do arquivo em que 
@@ -225,8 +224,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         abrirConexaoComArquivos(ModosDeAberturaEFechamento.ESCRITA, 0);
 
         do {
-            // ler o número de registros que cabem em um bloco
-            // do disco, armazenar em dadosASeremOrdenados e obter a quantidade 
+            // ler capacidadeRegistrosEmMemoria registros, armazenar em dadosASeremOrdenados e obter a quantidade 
             // de bytes restantes no arquivo
             qtdBytesDisponivel = lerRegistrosDoArquivoDeDados(dadosASeremOrdenados);
 
@@ -263,7 +261,6 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         return -1;
     }
 
-    // o número de bytes que ainda faltam ser lidos dos arquivos abertos em modo leitura
     // preencher o array qtdBytesDisponivelNosArquivos de forma a colocar em cada posição
     // o número de bytes que ainda faltam ser lidos dos arquivos abertos em modo leitura
     private void getNumBytesDisponiveis() {
@@ -293,7 +290,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     public void intercalarDadosDistribuidos() {
         Map<Integer, T> registrosLidos = new HashMap<Integer, T>(); // para os registros que serão intercalados:
         int tamHashMap = 0;
-        // chave é o número do arquivo de onde o registro foi lido
+        // chave é índice do array objectInputs de onde o registro foi lido
         // valor é o registro lido
         T menorRegistro = null;
         T registroLido = null;
@@ -323,7 +320,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         do {
             // ponto de partida da intercalação:
             // pegar um registro de cada arquivo aberto em modo leitura e inserir no hash map
-            // juntamente com o número do arquivo de onde o registro foi lido
+            // juntamente com o índice do array objectInputs de onde o registro foi lido
             for (int i = 0; i < caminhos; i++) {
                 registroLido = lerRegistroDoArquivo(i); 
 
@@ -338,7 +335,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             while ( (tamHashMap = registrosLidos.size()) > 0 ) {
                 // System.out.println("registrosLidos: " + registrosLidos);
 
-                // obter menor registro e o número do arquivo de onde ele foi lido
+                // obter menor registro e o índice do array de onde ele foi lido
                 menorRegistro = Collections.min(registrosLidos.values());
                 posMenorRegistro = keyOf(registrosLidos, menorRegistro);
 
@@ -346,7 +343,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                 // o número do arquivo de destino é igual a (destino + pontoInicioEscrita)
                 escreverRegistroNoArquivo(menorRegistro, destino);
 
-                // ler do arquivo em que o menor registro foi encontrado caso ainda
+                // ler do índice em que o menor registro foi encontrado caso ainda
                 // nao tenha lido a quantidade de registros que deveria ser lida
                 if (qtdLeiturasFeitas[posMenorRegistro] < quantosRegistrosLer) {
                     registroLido = lerRegistroDoArquivo(posMenorRegistro); 
@@ -362,7 +359,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                         registrosLidos.remove( posMenorRegistro );
                     }
                 } else {
-                    // se todos os registros que deveriam ser lidos do arquivo de número posMenorRegistro
+                    // se todos os registros que deveriam ser lidos do índice de número posMenorRegistro
                     // já foram lidos, remover o registro na posição posMenorRegistro do hashmap para 
                     // possibilitar que o menor seja encontrado corretamente
                     registrosLidos.remove( posMenorRegistro );
@@ -377,7 +374,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
             registrosLidos.clear();
 
-            // zerar a quantidade de leituras feitas em cada arquivo
+            // zerar a quantidade de leituras feitas em cada índice
             for (int i = 0; i < caminhos; i++) {
                 qtdLeiturasFeitas[i] = 0;
             }
@@ -403,7 +400,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                 abrirConexaoComArquivos(ModosDeAberturaEFechamento.LEITURA, pontoInicioLeitura);
                 abrirConexaoComArquivos(ModosDeAberturaEFechamento.ESCRITA, pontoInicioEscrita);
 
-                // quantos registros devem ser lidos de cada arquivo
+                // quantos registros devem ser lidos de cada índice do array objectInputs
                 quantosRegistrosLer = quantosRegistrosLer * caminhos;
 
                 getNumBytesDisponiveis();
@@ -416,12 +413,12 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             // trocar o destino de maneira circular
             destino = (destino + 1) % caminhos;
 
-            // condição de parada: o número de bytes de um único arquivo deve ser superior a 0,
-            // de modo que somente um arquivo foi utilizado para intercalar os dados última intercalação
+            // condição de parada: um único arquivo deve ter um número de bytes disponíveis superior a 0,
+            // de modo que somente um arquivo foi utilizado para intercalar os dados na última intercalação
         } while (numArquivosComDados != 1);
 
-        // passar para o método finalizar() o número do arquivo que contém 
-        // os dados ordenados, que corresponde ao último número do destino + pontoInicioEscrita 
+        // passar para o método finalizar() o índice do array de objectInputs que contém 
+        // os dados ordenados, que corresponde ao último número do destino + o pontoInicioEscrita 
         // anterior, que passou a ser o pontoInicioLeitura
         if (destino == 0) {
             finalizar( (caminhos - 1) + pontoInicioLeitura );
@@ -445,6 +442,10 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             objectInputs[i] = null;
             objectOutputs[i] = null;
         }
+        fileInputs = null;
+        fileOutputs = null;
+        objectInputs = null;
+        objectOutputs = null;
         // deletar arquivos desnecessários
         for (int i = 0; i < 2*caminhos; i++) {
             if (i != numDoArquivoComOsDados) {
