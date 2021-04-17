@@ -59,7 +59,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     public IntercalacaoBalanceada(String arquivoASerOrdenado, int caminhos) {
         this.caminhos = (byte) caminhos;
-        this.capacidadeRegistrosEmMemoria = 7; // número fictício somente para testes
+        this.capacidadeRegistrosEmMemoria = 4; // número fictício somente para testes
         qtdBytesDisponivelNosArquivos = new int[caminhos];
 
         try {
@@ -301,24 +301,25 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         // caminhos pois a primeira metade contém os dados distribuídos
         int pontoInicioLeitura = 0;
         int quantosRegistrosLer = capacidadeRegistrosEmMemoria; // quantos registros devem ser lidos de um único arquivo em cada iteração
-        int numArquivosComDados = 0; // número de arquivos que possuem mais de 0 bytes disponíveis
+        int[] numArquivosComDados = new int[2]; // número de arquivos que possuem mais de 0 bytes disponíveis, isso para cada uma das metades dos arquivos
         int[] qtdLeiturasFeitas = new int[caminhos]; // quantidade de registros que foram lidos em cada arquivo aberto em modo leitura
+        int metadeLendo = 0; // inicia lendo os arquivos da primeira metade
+        boolean fim = false;
 
-        // número da intercalação feita
-        int numeroDaIntercalacao = 1;
+        // // número da intercalação feita
+        // int numeroDaIntercalacao = 1;
 
         // abrir conexões com arquivos com o número do arquivo inicial ditado pelas variáveis
         // pontoInicioLeitura e pontoInicioEscrita
         abrirConexaoComArquivos(ModosDeAberturaEFechamento.LEITURA, pontoInicioLeitura);
         abrirConexaoComArquivos(ModosDeAberturaEFechamento.ESCRITA, pontoInicioEscrita);
 
-        // preencher o vetor qtdBytesDisponivel com o número de bytes disponíveis
-        // nos arquivos abertos em modo leitura
-        getNumBytesDisponiveis();
-
-        // a intercalação para quando somente um único arquivo foi usado para 
-        // intercalar os dados
-        do {
+        // condição de parada: um único arquivo deve ter um número de bytes disponíveis superior a 0,
+        // de modo que somente um arquivo foi utilizado para intercalar os dados na última intercalação
+        // fim == true quando numArquivosComDados em uma das posições
+        // for 0 e na outra for 1, ou seja, se os dados dos arquivos
+        // em uma das metades tiverem acabado e na outra metade só tiver um arquivo com dados
+        while (!fim) {
             // ponto de partida da intercalação:
             // pegar um registro de cada arquivo aberto em modo leitura e inserir no hash map
             // juntamente com o índice do array objectInputs de onde o registro foi lido
@@ -367,11 +368,12 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                 }
             }
 
-            // ler o conteúdo do arquivo que foi utilizado para intercalar os dados
-            leitor = new LerDadosDeUmArquivo("arquivo" + (destino + pontoInicioEscrita) + ".tmp");
-            System.out.println("  Após a " + (numeroDaIntercalacao++) + "ª intercalação");
-            leitor.lerDados();
-            System.out.println();
+            // // ler o conteúdo do arquivo que foi utilizado para intercalar os dados: descomentar caso 
+            // // queira ver todos os registros em cada arquivo em cada passo da intercalação
+            // leitor = new LerDadosDeUmArquivo("arquivo" + (destino + pontoInicioEscrita) + ".tmp");
+            // System.out.println("  Após a " + (numeroDaIntercalacao++) + "ª intercalação");
+            // leitor.lerDados();
+            // System.out.println();
 
             registrosLidos.clear();
 
@@ -384,10 +386,13 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             // modo leitura
             getNumBytesDisponiveis();
 
-            numArquivosComDados = getNumeroDeArquivosQueAindaPossuemDados();
+            // checar o número de arquivos que ainda contem dados disponíveis para serem lidos e 
+            // armazenar no índice que corresponde a metade aberta em modo leitura em numArquivosComDados
+            numArquivosComDados[metadeLendo] = getNumeroDeArquivosQueAindaPossuemDados();
+            // System.out.println("numArquivoComDados: " + numArquivosComDados);
 
             // se todos os arquivos abertos em modo leitura chegaram ao fim
-            if (numArquivosComDados == 0) {
+            if (numArquivosComDados[metadeLendo] == 0) {
                 // necessário inverter os modos de abertura dos arquivos e as metades 
                 // em que serão feitas a leitura e a escrita
                 fecharConexaoComArquivos(ModosDeAberturaEFechamento.ESCRITA);
@@ -401,6 +406,9 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                 abrirConexaoComArquivos(ModosDeAberturaEFechamento.LEITURA, pontoInicioLeitura);
                 abrirConexaoComArquivos(ModosDeAberturaEFechamento.ESCRITA, pontoInicioEscrita);
 
+                // alternar metade em que os dados estão sendo lidos
+                metadeLendo = (metadeLendo + 1) % 2;
+
                 // quantos registros devem ser lidos de cada índice do array objectInputs
                 quantosRegistrosLer = quantosRegistrosLer * caminhos;
 
@@ -408,15 +416,27 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
                 // após a troca das metades de leitura e escrita, checar o número 
                 // de bytes dos arquivos abertos em modo leitura
-                numArquivosComDados = getNumeroDeArquivosQueAindaPossuemDados();
+                numArquivosComDados[metadeLendo] = getNumeroDeArquivosQueAindaPossuemDados();
             }
 
             // trocar o destino de maneira circular
             destino = (destino + 1) % caminhos;
 
-            // condição de parada: um único arquivo deve ter um número de bytes disponíveis superior a 0,
-            // de modo que somente um arquivo foi utilizado para intercalar os dados na última intercalação
-        } while (numArquivosComDados != 1);
+            // se não houverem dados nos arquivos de uma das metades
+            // e na outra metade somente um arquivo contiver dados
+            // padrão: se o número de caminhos for par, a primeira metade
+            // será a que vai conter o arquivo com os dados ordenados
+            // se for ímpar, vai ser a segunda metade
+            if (caminhos % 2 == 0) {
+                if ( numArquivosComDados[0] == 1 && numArquivosComDados[1] == 0) {
+                    fim = true;
+                }
+            } else {
+                if ( numArquivosComDados[0] == 0 && numArquivosComDados[1] == 1) {
+                    fim = true;
+                }
+            }
+        }
 
         // passar para o método finalizar() o índice do array de objectInputs que contém 
         // os dados ordenados, que corresponde ao último número do destino + o pontoInicioEscrita 
