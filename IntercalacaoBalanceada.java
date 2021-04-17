@@ -59,7 +59,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     public IntercalacaoBalanceada(String arquivoASerOrdenado, int caminhos) {
         this.caminhos = (byte) caminhos;
-        this.capacidadeRegistrosEmMemoria = 4; // número fictício somente para testes
+        this.capacidadeRegistrosEmMemoria = 20; // número fictício somente para testes
         qtdBytesDisponivelNosArquivos = new int[caminhos];
 
         try {
@@ -463,10 +463,12 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             objectInputs[i] = null;
             objectOutputs[i] = null;
         }
+
         fileInputs = null;
         fileOutputs = null;
         objectInputs = null;
         objectOutputs = null;
+
         // deletar arquivos desnecessários
         for (int i = 0; i < 2*caminhos; i++) {
             if (i != numDoArquivoComOsDados) {
