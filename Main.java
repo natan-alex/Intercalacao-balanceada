@@ -12,12 +12,12 @@ public class Main {
 		IntercalacaoBalanceada<Integer> ib = new IntercalacaoBalanceada<Integer>("dados_fonte.db", caminhos);
 		ib.distribuirDadosEntreCaminhos();
 
-		// System.out.println("\n\tAPOS A DISTRIBUIÇÃO EM " + caminhos + " CAMINHOS: ");
-		// for (int i = 0; i < caminhos; i++) {
-		// 	leitor = new LerDadosDeUmArquivo("arquivo"+i+".tmp");
-		// 	leitor.lerDados();
-		// 	System.out.println();
-		// }
+		System.out.println("\n\tAPOS A DISTRIBUIÇÃO EM " + caminhos + " CAMINHOS: ");
+		for (int i = 0; i < caminhos; i++) {
+			leitor = new LerDadosDeUmArquivo("arquivo"+i+".tmp");
+			leitor.lerDados();
+			System.out.println();
+		}
 
         System.out.println("\n\tNA INTERCALAÇÃO");
 		ib.intercalarDadosDistribuidos();
