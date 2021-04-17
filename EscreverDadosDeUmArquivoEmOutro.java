@@ -13,9 +13,9 @@ import java.io.BufferedReader;
 import java.io.Serializable;
 import java.io.IOException;
 
-public class GeradorDeDados {
+public class EscreverDadosDeUmArquivoEmOutro {
     // ler arquivo com registros de Pessoa e adicionar em dados_fonte.db
-	public GeradorDeDados(String nomeDoArquivoCsv) {
+	public EscreverDadosDeUmArquivoEmOutro(String nomeDoArquivoCsv) {
         String[] partes = new String[2];
         String linha = "";
 		try ( 
@@ -30,7 +30,7 @@ public class GeradorDeDados {
                 oos.writeObject( new Pessoa( partes[0], Integer.parseInt(partes[1]) ) );
             }
 		} catch (IOException e) {
-            System.out.println("IOException lançada no construtor da classe GeradorDeDados! Erro: " + e.getMessage());
+            System.out.println("IOException lançada no construtor da classe EscreverDadosDeUmArquivoEmOutro! Erro: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

@@ -6,7 +6,7 @@ package intercalacao_balanceada;
 
 public class Main {
     public static void main(String[] args) {
-        // GeradorDeDados gerador = new GeradorDeDados("mock_data.csv");
+        // EscreverDadosDeUmArquivoEmOutro gerador = new EscreverDadosDeUmArquivoEmOutro("mock_data.csv");
 		LerDadosDeUmArquivo leitor;
 		int caminhos = 6;
 		IntercalacaoBalanceada<Integer> ib = new IntercalacaoBalanceada<Integer>("dados_fonte.db", caminhos);
