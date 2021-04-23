@@ -148,7 +148,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     // retorna a quantidade de bytes restante no arquivo
     @SuppressWarnings("unchecked")
     private int lerRegistrosDoArquivoDeDados(List<T> ondeArmazenar) {
-        int qtdBytesDisponivel = 0;
+        int qtdBytesDisponivel = 0; 
         try {
             for (int i = 0; i < capacidadeRegistrosEmMemoria; i++) {
                 ondeArmazenar.add( (T) ois.readObject() );
@@ -290,11 +290,11 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
     public void intercalarDadosDistribuidos() {
         Map<Integer, T> registrosLidos = new HashMap<Integer, T>(); // para os registros que serão intercalados:
-        int tamHashMap = 0;
         // chave é índice do array objectInputs de onde o registro foi lido
         // valor é o registro lido
         T menorRegistro = null;
         T registroLido = null;
+        int tamHashMap = 0;
         int posMenorRegistro = 0;
         int destino = 0; // índice do array objectOutputs que será usado para escrita do menor registro
         int pontoInicioEscrita = caminhos; // num do arquivo onde a escrita deve comecar: inicia em 
