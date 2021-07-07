@@ -17,28 +17,27 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class OperacoesSobreArquivos {
-    public static void lerEMostrarConteudoDoArquivoUsandoObjectInputStream(String nomeDoArquivo) {
+    public static void lerEMostrarConteudoDoArquivoUsandoObjectInputStream(String nomeDoArquivo) throws IOException, ClassNotFoundException {
 		int numeroDeBytesDisponiveis = 0;
 		int numeroDeRegistrosLidos = 0;
 
 		System.out.println("Conteúdo do arquivo " + nomeDoArquivo + ": "); 
 
-		try (FileInputStream fis = new FileInputStream(nomeDoArquivo);
-			ObjectInputStream ois = new ObjectInputStream(fis) ) {
+		FileInputStream fis = new FileInputStream(nomeDoArquivo);
+		ObjectInputStream ois = new ObjectInputStream(fis);
 
+		try {
 			do {
 				System.out.println(ois.readObject());
 				numeroDeRegistrosLidos++;
 				numeroDeBytesDisponiveis = fis.available();
 			} while (numeroDeBytesDisponiveis > 0);
-
 		} catch (EOFException e) {
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
+
+		fis.close();
+		ois.close();
 
 		System.out.println("Número de registros lidos: " + numeroDeRegistrosLidos);
     }
@@ -48,28 +47,26 @@ public class OperacoesSobreArquivos {
 	 * arquivo CSV tenha um construtor que receba um vetor de String
 	 * e faça o parsing dos dados para os atributos da classe
 	*/
-	public static void escreverConteudoDeUmArquivoCsvEmOutroArquivoUtilizandoObjectOutput(
+	public static <T extends Serializable> void escreverConteudoDeUmArquivoCsvEmOutroArquivoUtilizandoObjectOutput(
 		String nomeDoArquivoCsv,
 		String nomeDoNovoArquivo,
-		Class<?> classeDeDominioNoArquivoCsv
+		Class<T> classeDeDominioNoArquivoCsv
 	) throws InstantiationException, IllegalAccessException, 
-			 InvocationTargetException, NoSuchMethodException {
+			 InvocationTargetException, NoSuchMethodException, IOException {
 
         String[] partesDaLinhaDoArquivo;
         String linhaLidaDoArquivo = "";
 
-		try ( 
-            BufferedReader br = new BufferedReader(new FileReader(nomeDoArquivoCsv));
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomeDoNovoArquivo));
-        ) {
-			Constructor<?> construtor = classeDeDominioNoArquivoCsv.getConstructor(String[].class);
+		BufferedReader br = new BufferedReader(new FileReader(nomeDoArquivoCsv));
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nomeDoNovoArquivo));
+		Constructor<T> construtor = classeDeDominioNoArquivoCsv.getConstructor(String[].class);
 
-            while ( (linhaLidaDoArquivo = br.readLine() ) != null) {
-                partesDaLinhaDoArquivo = linhaLidaDoArquivo.split(";");
-                oos.writeObject(construtor.newInstance(new Object[] {partesDaLinhaDoArquivo} ));
-            }
-		} catch (IOException e) {
-			e.printStackTrace();
+		while ( (linhaLidaDoArquivo = br.readLine() ) != null) {
+			partesDaLinhaDoArquivo = linhaLidaDoArquivo.split(";");
+			oos.writeObject(construtor.newInstance(new Object[] {partesDaLinhaDoArquivo} ));
 		}
+		
+		br.close();
+		oos.close();
 	}
 }

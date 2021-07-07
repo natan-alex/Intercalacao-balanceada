@@ -56,25 +56,21 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         ESCRITA
     }
 
-    public IntercalacaoBalanceada(String nomeDoArquivoASerOrdenado, int numeroDeCaminhos) {
+    public IntercalacaoBalanceada(String nomeDoArquivoASerOrdenado, int numeroDeCaminhos) throws IOException {
         this.numeroDeCaminhos = numeroDeCaminhos;
         quantosRegistrosLerDeCadaArquivo = 20; // número fictício somente para testes
         numeroDeBytesDisponiveisNosArquivosTemporarios = new int[numeroDeCaminhos];
         numeroDeRegistrosLidosDeCadaIndiceDoObjectInputs = new int[numeroDeCaminhos];
         indicesEOsRegistrosLidosDessesIndices = new HashMap<Integer, T>(numeroDeCaminhos);
 
-        try {
-            fileInputParaOArquivoDeDados = new FileInputStream(nomeDoArquivoASerOrdenado);
-            objectInputParaOArquivoDeDados = new ObjectInputStream(fileInputParaOArquivoDeDados);
+        fileInputParaOArquivoDeDados = new FileInputStream(nomeDoArquivoASerOrdenado);
+        objectInputParaOArquivoDeDados = new ObjectInputStream(fileInputParaOArquivoDeDados);
 
-            fileInputsParaOsArquivosTemporarios = new FileInputStream[numeroDeCaminhos];
-            objectInputsParaOsArquivosTemporarios = new ObjectInputStream[numeroDeCaminhos];
+        fileInputsParaOsArquivosTemporarios = new FileInputStream[numeroDeCaminhos];
+        objectInputsParaOsArquivosTemporarios = new ObjectInputStream[numeroDeCaminhos];
 
-            fileOutputsParaOsArquivosTemporarios = new FileOutputStream[numeroDeCaminhos];
-            objectOutputsParaOsArquivosTemporarios = new ObjectOutputStream[numeroDeCaminhos];
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        fileOutputsParaOsArquivosTemporarios = new FileOutputStream[numeroDeCaminhos];
+        objectOutputsParaOsArquivosTemporarios = new ObjectOutputStream[numeroDeCaminhos];
     }
 
 

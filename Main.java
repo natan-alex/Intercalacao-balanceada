@@ -12,26 +12,26 @@ public class Main {
 			Veiculo.class
 		);
 
-		IntercalacaoBalanceada<Integer> ib = new IntercalacaoBalanceada<Integer>(
+		IntercalacaoBalanceada<Veiculo> ib = new IntercalacaoBalanceada<Veiculo>(
 			nomeDoArquivoComOsDadosSerializados,
 			numeroDeCaminhos
 		);
 
 		ib.distribuirOsDadosEntreOsCaminhos();
 
-		// System.out.println("\n\tAPOS A DISTRIBUIÇÃO EM " + numeroDeCaminhos + " CAMINHOS: ");
-		// for (int i = 0; i < numeroDeCaminhos; i++) {
-		// 	OperacoesSobreArquivos.lerEMostrarConteudoDoArquivo(
-		// 		IntercalacaoBalanceada.PREFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS +
-		// 		i + IntercalacaoBalanceada.SUFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS + ""
-		// 	);
-		// 	System.out.println();
-		// }
+		System.out.println("\n[APOS A DISTRIBUIÇÃO EM " + numeroDeCaminhos + " CAMINHOS]");
+		for (int i = 0; i < numeroDeCaminhos; i++) {
+			OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream(
+				IntercalacaoBalanceada.PREFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS +
+				i + IntercalacaoBalanceada.SUFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS 
+			);
+			System.out.println();
+		}
 
-        System.out.println("\n\tNA INTERCALAÇÃO");
+        System.out.println("\n[NA INTERCALAÇÃO]");
 		ib.intercalarOsDadosDistribuidos();
 
-		System.out.println("\n\tAPOS A INTERCALAÇÃO: ");
+		System.out.println("\n[APOS A INTERCALAÇÃO]");
         OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream("Dados_ordenados.db");
     }
 }
