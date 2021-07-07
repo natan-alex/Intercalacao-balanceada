@@ -204,6 +204,10 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
 
             if (numeroDeArquivosTemporariosDaMetadeSendoLidaQueAindaPossuemDados == 0) {
                 fecharEAbrirArquivosAsConexoesComOsArquivosTemporariosAlternandoOsModosDeAbertura();
+                // a cada etapa da intercalação, o número de registros que será lido
+                // no próximo arquivo corresponde ao número de registros totais que foram 
+                // lidos na etapa passada, o que justifica a multiplicação do valor
+                // atual pelo número de caminhos
                 quantosRegistrosLerDeCadaArquivo = quantosRegistrosLerDeCadaArquivo * numeroDeCaminhos;
                 numeroDeArquivosDaOutraMetadeDosArquivosTemporariosQueAindaPossuemDados = obterAQuantidadeDeArquivosTemporariosQueAindaPossuemBytesParaSeremLidos();
             }
@@ -265,6 +269,12 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                     indicesEOsRegistrosLidosDessesIndices.put(indiceDeOndeOMenorRegistroFoiLido, registroLido);
                     numeroDeRegistrosLidosDeCadaIndiceDoObjectInputs[indiceDeOndeOMenorRegistroFoiLido]++;
                 } else {
+                    // se o registro for == null significa que um dos
+                    // arquivos, se não ocorrer algum outro erro, chegou ao fim
+                    // e portanto considera-se que ele já leu todos os registros que deveria.
+                    // Além disso, as remoções abaixo do item do map ocorrem para que
+                    // o valor não seja considerado novamente na hora de encontrar o
+                    // novo menor registro
                     numeroDeRegistrosLidosDeCadaIndiceDoObjectInputs[indiceDeOndeOMenorRegistroFoiLido] = quantosRegistrosLerDeCadaArquivo;
                     indicesEOsRegistrosLidosDessesIndices.remove(indiceDeOndeOMenorRegistroFoiLido);
                 }

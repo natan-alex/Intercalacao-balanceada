@@ -17,7 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class OperacoesSobreArquivos {
-    public static void lerEMostrarConteudoDoArquivo(String nomeDoArquivo) {
+    public static void lerEMostrarConteudoDoArquivoUsandoObjectInputStream(String nomeDoArquivo) {
 		int numeroDeBytesDisponiveis = 0;
 		int numeroDeRegistrosLidos = 0;
 

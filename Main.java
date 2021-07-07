@@ -32,7 +32,7 @@ public class Main {
 		ib.intercalarOsDadosDistribuidos();
 
 		System.out.println("\n\tAPOS A INTERCALAÇÃO: ");
-        OperacoesSobreArquivos.lerEMostrarConteudoDoArquivo("Dados_ordenados.db");
+        OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream("Dados_ordenados.db");
     }
 }
 
