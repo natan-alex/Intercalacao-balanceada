@@ -1,38 +1,38 @@
-package intercalacao_balanceada;
+package balanced_interleaving;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-		final String nomeDoArquivoComOsDadosSerializados = "Dados_fonte.db";
-		final String nomeDoArquivoCsvComOsDados = "veiculos.csv";
-		final int numeroDeCaminhos = 5;
+		final String filenameWithTheSerialazedData = "Source_data.db";
+		final String csvFilename = "vehicles.csv";
+		final int numberOfPaths = 5;
 
-		OperacoesSobreArquivos.escreverConteudoDeUmArquivoCsvEmOutroArquivoUtilizandoObjectOutput(
-			nomeDoArquivoCsvComOsDados,
-			nomeDoArquivoComOsDadosSerializados,
-			Veiculo.class
+		FileOperations.serializeTheContentsOfTheCsvFileIntoAnotherFile(
+			csvFilename,
+			filenameWithTheSerialazedData,
+			Vehicle.class
 		);
 
-		IntercalacaoBalanceada<Veiculo> ib = new IntercalacaoBalanceada<Veiculo>(
-			nomeDoArquivoComOsDadosSerializados,
-			numeroDeCaminhos
+		BalancedInterleaving<Vehicle> ib = new BalancedInterleaving<Vehicle>(
+			filenameWithTheSerialazedData,
+			numberOfPaths
 		);
 
-		ib.distribuirOsDadosEntreOsCaminhos();
+		ib.distributeTheDataOfTheDataFileBetweenThePaths();
 
-		System.out.println("\n[APOS A DISTRIBUIÇÃO EM " + numeroDeCaminhos + " CAMINHOS]");
-		for (int i = 0; i < numeroDeCaminhos; i++) {
-			OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream(
-				IntercalacaoBalanceada.PREFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS +
-				i + IntercalacaoBalanceada.SUFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS 
+		System.out.println("\n[AFTER THE DISTRIBUTION BETWEEN " + numberOfPaths + " PATHS]");
+		for (int i = 0; i < numberOfPaths; i++) {
+			FileOperations.readAndShowTheSerializedFileContent(
+				BalancedInterleaving.DEFAULT_PREFIX_FOR_TEMP_FILENAMES +
+				i + BalancedInterleaving.DEFAULT_SUFIX_FOR_TEMP_FILENAMES 
 			);
 			System.out.println();
 		}
 
-        System.out.println("\n[NA INTERCALAÇÃO]");
-		ib.intercalarOsDadosDistribuidos();
+        System.out.println("\n[IN THE INTERLEAVING]");
+		ib.mergeTheDistributedData();
 
-		System.out.println("\n[APOS A INTERCALAÇÃO]");
-        OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream("Dados_ordenados.db");
+		System.out.println("\n[AFTER THE MERGE]");
+        FileOperations.readAndShowTheSerializedFileContent("Sorted_data.db");
     }
 }
 
