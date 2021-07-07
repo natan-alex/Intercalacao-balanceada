@@ -17,7 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class OperacoesSobreArquivos {
-    public static void lerEMostrarConteudoDoArquivoUsandoObjectInputStream(String nomeDoArquivo) throws IOException, ClassNotFoundException {
+    public static void lerEMostrarConteudoDoArquivoSerializado(String nomeDoArquivo) throws IOException, ClassNotFoundException {
 		int numeroDeBytesDisponiveis = 0;
 		int numeroDeRegistrosLidos = 0;
 
@@ -47,7 +47,7 @@ public class OperacoesSobreArquivos {
 	 * arquivo CSV tenha um construtor que receba um vetor de String
 	 * e faça o parsing dos dados para os atributos da classe
 	*/
-	public static <T extends Serializable> void escreverConteudoDeUmArquivoCsvEmOutroArquivoUtilizandoObjectOutput(
+	public static <T extends Serializable> void serializarConteudoDeUmArquivoCsvEmOutroArquivo(
 		String nomeDoArquivoCsv,
 		String nomeDoNovoArquivo,
 		Class<T> classeDeDominioNoArquivoCsv

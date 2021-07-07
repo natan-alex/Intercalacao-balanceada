@@ -51,14 +51,14 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     private int numeroDeArquivosTemporariosDaMetadeSendoLidaQueAindaPossuemDados;
     private int numeroDeArquivosDaOutraMetadeDosArquivosTemporariosQueAindaPossuemDados;
 
-    enum ModosDeAberturaEFechamentoDeArquivos {
+    enum QualTipoDeConexaoComOsArquivosAbrirOuFechar {
         LEITURA,
         ESCRITA
     }
 
     public IntercalacaoBalanceada(String nomeDoArquivoASerOrdenado, int numeroDeCaminhos) throws IOException {
         this.numeroDeCaminhos = numeroDeCaminhos;
-        quantosRegistrosLerDeCadaArquivo = 20; // número fictício somente para testes
+        quantosRegistrosLerDeCadaArquivo = 20; // número fictício
         numeroDeBytesDisponiveisNosArquivosTemporarios = new int[numeroDeCaminhos];
         numeroDeRegistrosLidosDeCadaIndiceDoObjectInputs = new int[numeroDeCaminhos];
         indicesEOsRegistrosLidosDessesIndices = new HashMap<Integer, T>(numeroDeCaminhos);
@@ -81,7 +81,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         int indiceDaConexaoOndeInserirOsRegistros = 0;
 
         numeroDoPrimeiroArquivoTemporarioASerAbertoEmModoEscrita = 0;
-        abrirConexoesComArquivosTemporarios(ModosDeAberturaEFechamentoDeArquivos.ESCRITA);
+        abrirConexoesComArquivosTemporarios(QualTipoDeConexaoComOsArquivosAbrirOuFechar.ESCRITA);
 
         numeroDeBytesDisponiveisNoArquivoDeDados = obterONumeroDeBytesRestantesNoArquivoDeDados();
 
@@ -94,14 +94,14 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
             numeroDeBytesDisponiveisNoArquivoDeDados = obterONumeroDeBytesRestantesNoArquivoDeDados();
         }
 
-        fecharConexoesComArquivosTemporarios(ModosDeAberturaEFechamentoDeArquivos.ESCRITA);
+        fecharConexoesComArquivosTemporarios(QualTipoDeConexaoComOsArquivosAbrirOuFechar.ESCRITA);
         fecharConexaoComArquivoDeDados();
     }
 
 
-    private void abrirConexoesComArquivosTemporarios(ModosDeAberturaEFechamentoDeArquivos modo) {
+    private void abrirConexoesComArquivosTemporarios(QualTipoDeConexaoComOsArquivosAbrirOuFechar modo) {
         try {
-            if (modo == ModosDeAberturaEFechamentoDeArquivos.LEITURA) {
+            if (modo == QualTipoDeConexaoComOsArquivosAbrirOuFechar.LEITURA) {
                 for (int i = 0; i < numeroDeCaminhos; i++) {
                     fileInputsParaOsArquivosTemporarios[i] = new FileInputStream(
                         PREFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS + 
@@ -159,9 +159,9 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         }
     }
 
-    private void fecharConexoesComArquivosTemporarios(ModosDeAberturaEFechamentoDeArquivos modo) {
+    private void fecharConexoesComArquivosTemporarios(QualTipoDeConexaoComOsArquivosAbrirOuFechar modo) {
         try {
-            if (modo == ModosDeAberturaEFechamentoDeArquivos.LEITURA) {
+            if (modo == QualTipoDeConexaoComOsArquivosAbrirOuFechar.LEITURA) {
                 for (int i = 0; i < numeroDeCaminhos; i++) {
                     fileInputsParaOsArquivosTemporarios[i].close();
                     objectInputsParaOsArquivosTemporarios[i].close(); 
@@ -252,7 +252,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         indicesEOsRegistrosLidosDessesIndices.clear();
         zerarItensDoVetorQueContemONumeroDeRegistrosLidosDeCadaArquivoTemporario();
 
-        lerUmRegistroDeCadaArquivoTemporario();
+        lerUmRegistroDeCadaArquivoTemporarioEAtualizarAtributoCorrespondente();
 
         while ( indicesEOsRegistrosLidosDessesIndices.size() > 0 ) {
             obterMenorRegistroEIndiceDeOndeEleFoiLidoEAtualizarAtributosCorrespondentes();
@@ -265,7 +265,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
                     indicesEOsRegistrosLidosDessesIndices.put(indiceDeOndeOMenorRegistroFoiLido, registroLido);
                     numeroDeRegistrosLidosDeCadaIndiceDoObjectInputs[indiceDeOndeOMenorRegistroFoiLido]++;
                 } else {
-                    // se o registro for == null significa que um dos
+                    // se o registro for null significa que um dos
                     // arquivos, se não ocorrer algum outro erro, chegou ao fim
                     // e portanto considera-se que ele já leu todos os registros que deveria.
                     // Além disso, as remoções abaixo do item do map ocorrem para que
@@ -286,7 +286,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         }
     }
 
-    private void lerUmRegistroDeCadaArquivoTemporario() {
+    private void lerUmRegistroDeCadaArquivoTemporarioEAtualizarAtributoCorrespondente() {
         T registroLido = null;
 
         for (int i = 0; i < numeroDeCaminhos; i++) {
@@ -378,7 +378,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
     private void fazerTrativasFinaisNosArquivosTemporarios(int ultimoIndiceUsadoParaInserirOsRegistros) {
         int numeroDoArquivoQueContemOsDadosOrdenados = obterONumeroDoArquivoQueContemOsDadosOrdenados(ultimoIndiceUsadoParaInserirOsRegistros);
         renomearArquivoQueContemOsDadosOrdenados(numeroDoArquivoQueContemOsDadosOrdenados);
-        excluirArquivosTemporariosDesnecessarios();
+        excluirArquivosTemporariosNaoMaisNecessarios();
     }
 
     private int obterONumeroDoArquivoQueContemOsDadosOrdenados(int ultimoIndiceUsadoParaInserirOsRegistros) {
@@ -406,7 +406,7 @@ public class IntercalacaoBalanceada<T extends Comparable<T> & Serializable> {
         }
     }
 
-    private void excluirArquivosTemporariosDesnecessarios() {
+    private void excluirArquivosTemporariosNaoMaisNecessarios() {
         try {
             for (int i = 0; i < 2 * numeroDeCaminhos; i++) {
                 Files.deleteIfExists(

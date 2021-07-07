@@ -6,7 +6,7 @@ public class Main {
 		final String nomeDoArquivoCsvComOsDados = "veiculos.csv";
 		final int numeroDeCaminhos = 5;
 
-		OperacoesSobreArquivos.escreverConteudoDeUmArquivoCsvEmOutroArquivoUtilizandoObjectOutput(
+		OperacoesSobreArquivos.serializarConteudoDeUmArquivoCsvEmOutroArquivo(
 			nomeDoArquivoCsvComOsDados,
 			nomeDoArquivoComOsDadosSerializados,
 			Veiculo.class
@@ -21,7 +21,7 @@ public class Main {
 
 		System.out.println("\n[APOS A DISTRIBUIÇÃO EM " + numeroDeCaminhos + " CAMINHOS]");
 		for (int i = 0; i < numeroDeCaminhos; i++) {
-			OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream(
+			OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoSerializado(
 				IntercalacaoBalanceada.PREFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS +
 				i + IntercalacaoBalanceada.SUFIXO_PADRAO_DO_NOME_DOS_ARQUIVOS_TEMPORARIOS 
 			);
@@ -32,7 +32,7 @@ public class Main {
 		ib.intercalarOsDadosDistribuidos();
 
 		System.out.println("\n[APOS A INTERCALAÇÃO]");
-        OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoUsandoObjectInputStream("Dados_ordenados.db");
+        OperacoesSobreArquivos.lerEMostrarConteudoDoArquivoSerializado("Dados_ordenados.db");
     }
 }
 
